@@ -97,7 +97,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
       num += match - 13;
       square += match - 13;
       if (num > 8) {
-        //printf("more than 8 squares on one rank\n");
+        //_printf("more than 8 squares on one rank\n");
         error = 1;
         break;
       }
@@ -108,7 +108,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
  */
     else {
       if (++num > 8) {
-        //printf("more than 8 squares on one rank\n");
+        //_printf("more than 8 squares on one rank\n");
         error = 1;
         break;
       }
@@ -140,7 +140,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
   else if (args[1][0] == 'b')
     twtm = 0;
   else {
-    //printf("side to move is bad\n");
+    //_printf("side to move is bad\n");
     error = 1;
   }
 /*
@@ -164,7 +164,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
         else if (match == 3)
           bcastle += 2;
         else if (args[2][0] != '-') {
-          //printf("castling status is bad.\n");
+          //_printf("castling status is bad.\n");
           error = 1;
         }
       }
@@ -176,7 +176,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
           args[3][1] < '9') {
         ep = (args[3][1] - '1') * 8 + args[3][0] - 'a';
       } else if (args[3][0] != '-') {
-        //printf("enpassant status is bad.\n");
+        //_printf("enpassant status is bad.\n");
         error = 1;
       }
     }
@@ -202,7 +202,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
         ep = 0;
       }
       if (!ep) {
-        //printf("enpassant status is bad.\n");
+        //_printf("enpassant status is bad.\n");
         ep = 0;
         error = 1;
       }
@@ -221,7 +221,7 @@ void SetBoard(TREE * tree, int nargs, char *args[], int special) {
       || ((Castle(0, white) & 1) && (PcOnSq(H1) != rook))
       || ((Castle(0, black) & 2) && (PcOnSq(A8) != -rook))
       || ((Castle(0, black) & 1) && (PcOnSq(H8) != -rook))) {
-    //printf("ERROR-- castling status does not match board position\n");
+    //_printf("ERROR-- castling status does not match board position\n");
     error = 1;
   }
 /*

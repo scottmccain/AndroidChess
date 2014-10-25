@@ -50,7 +50,7 @@ void Bench(int increase) {
     Print(4095, "Running benchmark %d. . .\n", increase);
   else
     Print(4095, "Running benchmark. . .\n");
-  printf(".");
+  _printf(".");
   fflush(stdout);
 /*
  ************************************************************
@@ -75,7 +75,7 @@ void Bench(int increase) {
     thinking = 0;
     nodes += tree->nodes_searched;
     total_time_used += (program_end_time - program_start_time);
-    printf(".");
+    _printf(".");
     fflush(stdout);
   }
 /*
@@ -85,7 +85,7 @@ void Bench(int increase) {
  *                                                          *
  ************************************************************
  */
-  printf("\n");
+  _printf("\n");
   Print(4095, "Total nodes: %" PRIu64 "\n", nodes);
   Print(4095, "Raw nodes per second: %d\n",
       (int) ((double) nodes / ((double) total_time_used / (double) 100.0)));

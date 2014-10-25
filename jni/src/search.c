@@ -1,5 +1,6 @@
 #include "chess.h"
 #include "data.h"
+
 /* last modified 09/24/14 */
 /*
  *******************************************************************************
@@ -80,7 +81,7 @@ int Search(TREE * RESTRICT tree, int alpha, int beta, int wtm, int depth,
           SavePV(tree, ply, 0);
 #if defined(TRACE)
         if (ply <= trace_level)
-          printf("draw by repetition detected, ply=%d.\n", ply);
+          _printf("draw by repetition detected, ply=%d.\n", ply);
 #endif
         return value;
       }
@@ -705,7 +706,7 @@ int Search(TREE * RESTRICT tree, int alpha, int beta, int wtm, int depth,
       SavePV(tree, ply, 0);
 #if defined(TRACE)
       if (ply <= trace_level)
-        printf("Search() no moves!  ply=%d\n", ply);
+        _printf("Search() no moves!  ply=%d\n", ply);
 #endif
     }
     return value;
@@ -720,7 +721,7 @@ int Search(TREE * RESTRICT tree, int alpha, int beta, int wtm, int depth,
         SavePV(tree, ply, 0);
 #if defined(TRACE)
       if (ply <= trace_level)
-        printf("draw by 50 move rule detected, ply=%d.\n", ply);
+        _printf("draw by 50 move rule detected, ply=%d.\n", ply);
 #endif
       return value;
     } else if (alpha != original_alpha) {

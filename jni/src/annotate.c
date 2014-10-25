@@ -109,7 +109,7 @@ void Annotate() {
   strcpy(tbuffer, buffer);
   nargs = ReadParse(tbuffer, args, " 	;");
   if (nargs < 6) {
-    printf
+    _printf
         ("usage: annotate <file> <color> <moves> <margin> <time> [nmoves]\n");
     return;
   }

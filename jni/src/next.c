@@ -121,7 +121,7 @@ int NextEvasion(TREE * RESTRICT tree, int ply, int side) {
         }
       return NONE;
     default:
-      printf("oops!  next_status.phase is bad! [evasion %d]\n",
+      _printf("oops!  next_status.phase is bad! [evasion %d]\n",
           tree->next_status[ply].phase);
   }
   return NONE;
@@ -472,42 +472,42 @@ int NextRootMove(TREE * RESTRICT tree, TREE * RESTRICT mytree, int side) {
  *                                                          *
  ************************************************************
  */
-      //if (ReadClock() - start_time > noise_level && display_options & 32) {
-      //  Lock(lock_io);
-      //  sprintf(mytree->remaining_moves_text, "%d/%d", which + 1,
-      //      n_root_moves);
-      //  end_time = ReadClock();
-/*        if (pondering)
-          printf("         %2i   %s%7s?  ", iteration_depth,
+      if (ReadClock() - start_time > noise_level && display_options & 32) {
+        Lock(lock_io);
+        sprintf(mytree->remaining_moves_text, "%d/%d", which + 1,
+            n_root_moves);
+        end_time = ReadClock();
+        if (pondering)
+          _printf("         %2i   %s%7s?  ", iteration_depth,
               Display2Times(end_time - start_time),
               mytree->remaining_moves_text);
         else
-          printf("         %2i   %s%7s*  ", iteration_depth,
+          _printf("         %2i   %s%7s*  ", iteration_depth,
               Display2Times(end_time - start_time),
-              mytree->remaining_moves_text)*/;
+              mytree->remaining_moves_text);
 
-		//if (display_options & 32 && display_options & 64)
-        //  printf("%d. ", move_number);
+		if (display_options & 32 && display_options & 64)
+          _printf("%d. ", move_number);
 
-		//if (display_options & 32 && display_options & 64 && Flip(side))
-        //  printf("... ");
+		if (display_options & 32 && display_options & 64 && Flip(side))
+          _printf("... ");
 
-		//Flip(side);
-        //strcpy(mytree->root_move_text, OutputMove(tree, tree->curmv[1], 1,
-        //        side));
-        //total_nodes = block[0]->nodes_searched;
-        //for (i = 1; i < MAX_BLOCKS; i++)
-        //  if (block[i] && block[i]->used)
-        //    total_nodes += block[i]->nodes_searched;
-        //nodes_per_second = total_nodes * 100 / Max(end_time - start_time, 1);
-        //i = strlen(mytree->root_move_text);
-        //i = (i < 8) ? i : 8;
-        //strncat(mytree->root_move_text, "          ", 8 - i);
-        //printf("%s", mytree->root_move_text);
-        //printf("(%snps)             \r", DisplayKMB(nodes_per_second, 0));
-        //fflush(stdout);
-      //  Unlock(lock_io);
-      //}
+		Flip(side);
+        strcpy(mytree->root_move_text, OutputMove(tree, tree->curmv[1], 1,
+                side));
+        total_nodes = block[0]->nodes_searched;
+        for (i = 1; i < MAX_BLOCKS; i++)
+          if (block[i] && block[i]->used)
+            total_nodes += block[i]->nodes_searched;
+        nodes_per_second = total_nodes * 100 / Max(end_time - start_time, 1);
+        i = strlen(mytree->root_move_text);
+        i = (i < 8) ? i : 8;
+        strncat(mytree->root_move_text, "          ", 8 - i);
+        _printf("%s", mytree->root_move_text);
+        _printf("(%snps)             \r", DisplayKMB(nodes_per_second, 0));
+        fflush(stdout);
+        Unlock(lock_io);
+      }
 /*
  ************************************************************
  *                                                          *

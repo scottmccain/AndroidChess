@@ -1028,7 +1028,7 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
     return;
   }
   if (!(book_input = fopen(args[2], "r"))) {
-    printf("file %s does not exist.\n", args[2]);
+    _printf("file %s does not exist.\n", args[2]);
     return;
   }
   ReadPGN(0, 0);
@@ -1060,7 +1060,7 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
   minor = atoi(strchr(version, '.') + 1);
   major = (major << 16) + minor;
   start = !strstr(output_filename, "book.bin");
-  printf("parsing pgn move file (100k moves/dot)\n");
+  _printf("parsing pgn move file (100k moves/dot)\n");
   start_elapsed_time = ReadClock();
   if (book_file) {
     total_moves = 0;
@@ -1148,10 +1148,10 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
                   }
                 }
                 if (!(total_moves % 100000)) {
-                  printf("%s", schar);
+                  _printf("%s", schar);
                   strcpy(schar, ".");
                   if (!(total_moves % 6000000))
-                    printf(" (%dk)\n", total_moves / 1000);
+                    _printf(" (%dk)\n", total_moves / 1000);
                   fflush(stdout);
                 }
                 wtm = Flip(wtm);
@@ -1204,7 +1204,7 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
     if (buffered)
       BookSort(bbuffer, buffered, ++files);
     free(bbuffer);
-    printf("S  <done>\n");
+    _printf("S  <done>\n");
     if (total_moves == 0) {
       Print(4095, "ERROR - empty input PGN file\n");
       return;
@@ -1218,7 +1218,7 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
  *                                                          *
  ************************************************************
  */
-    printf("merging sorted files (%d) (100k/dot)\n", files);
+    _printf("merging sorted files (%d) (100k/dot)\n", files);
     counter = 0;
     index = (int *) malloc(32768 * sizeof(int));
     if (!index) {
@@ -1263,9 +1263,9 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
       next.learn = 0.0;
       counter++;
       if (counter % 100000 == 0) {
-        printf(".");
+        _printf(".");
         if (counter % 6000000 == 0)
-          printf(" (%dk)\n", counter / 1000);
+          _printf(" (%dk)\n", counter / 1000);
         fflush(stdout);
       }
       if (current.position == next.position) {
@@ -1422,7 +1422,7 @@ void BookSort(BB_POSITION * buffer, int number, int fileno) {
   qsort((char *) buffer, number, sizeof(BB_POSITION), BookupCompare);
   sprintf(fname, "sort.%d", fileno);
   if (!(output_file = fopen(fname, "wb+")))
-    printf("ERROR.  unable to open sort output file\n");
+    _printf("ERROR.  unable to open sort output file\n");
   stat = fwrite(buffer, sizeof(BB_POSITION), number, output_file);
   if (stat != number)
     Print(4095, "ERROR!  write failed, disk probably full.\n");
@@ -1452,13 +1452,13 @@ BB_POSITION BookupNextPosition(int files, int init) {
     for (i = 1; i <= files; i++) {
       sprintf(fname, "sort.%d", i);
       if (!(input_file[i] = fopen(fname, "rb"))) {
-        printf("unable to open sort.%d file, may be too many files open.\n",
+        _printf("unable to open sort.%d file, may be too many files open.\n",
             i);
         CraftyExit(1);
       }
       buffer[i] = (BB_POSITION *) malloc(sizeof(BB_POSITION) * MERGE_BLOCK);
       if (!buffer[i]) {
-        printf("out of memory.  aborting. \n");
+        _printf("out of memory.  aborting. \n");
         CraftyExit(1);
       }
       fseek(input_file[i], 0, SEEK_SET);

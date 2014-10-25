@@ -46,7 +46,7 @@ void EVTest(char *filename) {
  ************************************************************
  */
   if (!(test_input = fopen(filename, "r"))) {
-    printf("file %s does not exist.\n", filename);
+    _printf("file %s does not exist.\n", filename);
     return;
   }
   while (1) {
@@ -116,7 +116,7 @@ void EVTest(char *filename) {
           s3 != s4) {
         strcpy(buffer, "flip");
         Option(tree);
-        printf("FEN = %s\n", buff);
+        _printf("FEN = %s\n", buff);
         DisplayChessBoard(stdout, tree->position);
         if (id)
           Print(4095, "id=%s  ", args[id + 1]);

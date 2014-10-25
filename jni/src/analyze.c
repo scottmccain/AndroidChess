@@ -34,7 +34,7 @@ void Analyze() {
   analyze_mode = 1;
   if (!xboard)
     display_options |= 1 + 2 + 4;
-  printf("Analyze Mode: type \"exit\" to terminate.\n");
+  _printf("Analyze Mode: type \"exit\" to terminate.\n");
 /*
  ************************************************************
  *                                                          *
@@ -56,9 +56,9 @@ void Analyze() {
         moves_out_of_book = 0;
       if (!xboard) {
         if (game_wtm)
-          printf("analyze.White(%d): ", move_number);
+          _printf("analyze.White(%d): ", move_number);
         else
-          printf("analyze.Black(%d): ", move_number);
+          _printf("analyze.Black(%d): ", move_number);
         fflush(stdout);
       }
 /*
@@ -80,9 +80,9 @@ void Analyze() {
           Print(128, "%s\n", buffer);
           if (strstr(args[0], "timeleft") && !xboard) {
             if (game_wtm)
-              printf("analyze.White(%d): ", move_number);
+              _printf("analyze.White(%d): ", move_number);
             else
-              printf("analyze.Black(%d): ", move_number);
+              _printf("analyze.Black(%d): ", move_number);
             fflush(stdout);
           }
         } while (strstr(args[0], "timeleft"));
@@ -168,7 +168,7 @@ void Analyze() {
       else {
         pondering = 0;
         if (Option(tree) == 0)
-          printf("illegal move: %s\n", buffer);
+          _printf("illegal move: %s\n", buffer);
         pondering = 1;
         display = tree->position;
       }
@@ -180,7 +180,7 @@ void Analyze() {
       move_number++;
   } while (1);
   analyze_mode = 0;
-  printf("analyze complete.\n");
+  _printf("analyze complete.\n");
   pondering = 0;
   swindle_mode = save_swindle_mode;
 }

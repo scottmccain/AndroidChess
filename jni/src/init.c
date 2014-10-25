@@ -84,7 +84,7 @@ void Initialize() {
   log_file = fopen(log_filename, "w");
   history_file = fopen(history_filename, "w+");
   if (!history_file) {
-    printf("ERROR, unable to open game history file, exiting\n");
+    _printf("ERROR, unable to open game history file, exiting\n");
     CraftyExit(1);
   }
   AlignedMalloc((void *) ((void *) &trans_ref), 64,

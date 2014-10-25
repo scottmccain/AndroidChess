@@ -289,9 +289,9 @@ int Iterate(int wtm, int search_type, int root_list_done) {
  ************************************************************
  */
         if (trace_level) {
-          printf("==================================\n");
-          printf("=      search iteration %2d       =\n", iteration_depth);
-          printf("==================================\n");
+          _printf("==================================\n");
+          _printf("=      search iteration %2d       =\n", iteration_depth);
+          _printf("==================================\n");
         }
         if (tree->nodes_searched) {
           nodes_between_time_checks = nodes_per_second / 10;

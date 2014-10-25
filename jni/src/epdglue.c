@@ -99,7 +99,7 @@ void EGPrint(charptrT s) {
  for a single getchar() call in the epdhelp display pager.
  */
 /* for Crafty, the standard output is used */
-  printf("%s", s);
+  _printf("%s", s);
   return;
 }
 

@@ -36,6 +36,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 #if !defined(TYPES_INCLUDED)
 #  define TYPES_INCLUDED
 #  if !defined (UNIX)
@@ -487,6 +488,7 @@ void UnmakeMove(TREE *RESTRICT, int, int, int);
 int ValidMove(TREE *RESTRICT, int, int, int);
 int VerifyMove(TREE *RESTRICT, int, int, int);
 void ValidatePosition(TREE *RESTRICT, int, int, char *);
+void buffer_send(const char*, ...);
 #  if !defined(UNIX)
 extern void *WinMallocInterleaved(size_t, int);
 extern void WinFreeInterleaved(void *, size_t);
@@ -510,6 +512,10 @@ void shutdown_sockets();
 int check_socket();
 int read_socket(char *, unsigned int);
 #endif
+
+
+void jni_printf(const char *format, va_list argptr);
+
 
 #  define Abs(a)    (((a) > 0) ? (a) : -(a))
 #  define Max(a,b)  (((a) > (b)) ? (a) : (b))
@@ -626,4 +632,6 @@ int read_socket(char *, unsigned int);
 #    define SPEAK ".\\Speak.exe "
 #  endif
 #endif
+
+#define _printf buffer_send
 /* *INDENT-ON* */

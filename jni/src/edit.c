@@ -47,9 +47,9 @@ void Edit(void) {
   while (1) {
     if ((input_stream == stdin) && !xboard) {
       if (wtm)
-        printf("edit(white): ");
+        _printf("edit(white): ");
       else
-        printf("edit(black): ");
+        _printf("edit(black): ");
     }
     fflush(stdout);
     readstat = Read(1, buffer);
@@ -78,7 +78,7 @@ void Edit(void) {
         trank = args[0][2] - '1';
         square = (trank << 3) + tfile;
         if ((square < 0) || (square > 63))
-          printf("unrecognized square %s\n", args[0]);
+          _printf("unrecognized square %s\n", args[0]);
         if (wtm)
           PcOnSq(square) = piece;
         else
@@ -90,13 +90,13 @@ void Edit(void) {
       trank = args[0][1] - '1';
       square = (trank << 3) + tfile;
       if ((square < 0) || (square > 63))
-        printf("unrecognized square %s\n", args[0]);
+        _printf("unrecognized square %s\n", args[0]);
       if (wtm)
         PcOnSq(square) = piece;
       else
         PcOnSq(square) = -piece;
     } else
-      printf("unrecognized piece %s\n", args[0]);
+      _printf("unrecognized piece %s\n", args[0]);
   }
 /*
  ************************************************************

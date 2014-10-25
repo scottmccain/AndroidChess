@@ -105,7 +105,7 @@ void ResignOrDraw(TREE * RESTRICT tree, int value) {
 //    if (xboard)
 //      Print(4095, "resign\n");
 //    if (audible_alarm)
-//      printf("%c", audible_alarm);
+//      _printf("%c", audible_alarm);
     if (speech) {
       //char announce[128];
 
@@ -126,7 +126,7 @@ void ResignOrDraw(TREE * RESTRICT tree, int value) {
     if (!xboard) {
       //Print(128, "\nI offer a draw.\n\n");
       //if (audible_alarm)
-      //  printf("%c", audible_alarm);
+      //  _printf("%c", audible_alarm);
       if (speech) {
         //char announce[128];
 

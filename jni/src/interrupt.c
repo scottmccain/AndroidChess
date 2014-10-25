@@ -72,20 +72,20 @@ void Interrupt(int ply) {
         if (xboard) {
           end_time = ReadClock();
           time_used = (end_time - start_time);
-          printf("stat01: %d ", time_used);
-          printf("%" PRIu64 " ", tree->nodes_searched);
-          printf("%d ", iteration_depth);
+          _printf("stat01: %d ", time_used);
+          _printf("%" PRIu64 " ", tree->nodes_searched);
+          _printf("%d ", iteration_depth);
           for (i = 0; i < n_root_moves; i++)
             if (!(root_moves[i].status & 8))
               left++;
-          printf("%d %d\n", left, n_root_moves);
+          _printf("%d %d\n", left, n_root_moves);
           fflush(stdout);
           break;
         } else {
           end_time = ReadClock();
           time_used = (end_time - start_time);
-          printf("time:%s ", DisplayTime(time_used));
-          printf("nodes:%" PRIu64 "\n", tree->nodes_searched);
+          _printf("time:%s ", DisplayTime(time_used));
+          _printf("nodes:%" PRIu64 "\n", tree->nodes_searched);
           DisplayTreeState(block[0], 1, 0, ply);
         }
       }

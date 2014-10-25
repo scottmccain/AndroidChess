@@ -18,6 +18,7 @@
 #  include <time.h>
 #endif
 
+
 /*
  *******************************************************************************
  *                                                                             *
@@ -248,9 +249,6 @@ unsigned char *BookOut64(uint64_t val) {
   return convert_buff;
 }
 
-int check_pipe() {
-	return 0;
-}
 /*
  *******************************************************************************
  *                                                                             *
@@ -266,58 +264,48 @@ int check_pipe() {
 #  include <conio.h>
 /* Windows NT using PeekNamedPipe() function */
 int CheckInput(void) {
-  int i;
-  static int init = 0, pipestdin;
-  static HANDLE inh;
-  DWORD dw;
+//  int i;
+//  static int init = 0, pipestdin;
+//  static HANDLE inh;
+//  DWORD dw;
 
-#if defined(USE_SOCKETS)
-  if(pipe_mode)
-	  return check_pipe();
-  if(socket_mode)
-	  return check_socket();
-#endif
-
-  if (!xboard && !isatty(fileno(stdin)))
-    return 0;
-  if (batch_mode)
-    return 0;
-  if (strchr(cmd_buffer, '\n'))
-    return 1;
-  if (xboard) {
-#  if defined(FILE_CNT)
-    if (stdin->_cnt > 0)
-      return stdin->_cnt;
-#  endif
-    if (!init) {
-      init = 1;
-      inh = GetStdHandle(STD_INPUT_HANDLE);
-      pipestdin = !GetConsoleMode(inh, &dw);
-      if (!pipestdin) {
-        SetConsoleMode(inh, dw & ~(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
-        FlushConsoleInputBuffer(inh);
-      }
-    }
-    if (pipestdin) {
-      if (!PeekNamedPipe(inh, NULL, 0, NULL, &dw, NULL)) {
-        return 1;
-      }
-      return dw;
-    //} else if(pipe_mode) {
-      //if (!PeekNamedPipe(pipe_handle, NULL, 0, NULL, &dw, NULL)) {
-      //  return 1;
-      //}
-      //return dw;
-	} else {
-      GetNumberOfConsoleInputEvents(inh, &dw);
-      return dw <= 1 ? 0 : dw;
-    }
-  } else {
-    i = _kbhit();
-  }
-  return i;
+//  if (!xboard && !isatty(fileno(stdin)))
+//    return 0;
+//  if (batch_mode)
+//    return 0;
+//  if (strchr(cmd_buffer, '\n'))
+//    return 1;
+//  if (xboard) {
+//#  if defined(FILE_CNT)
+//    if (stdin->_cnt > 0)
+//      return stdin->_cnt;
+//#  endif
+//    if (!init) {
+//      init = 1;
+//      inh = GetStdHandle(STD_INPUT_HANDLE);
+//      pipestdin = !GetConsoleMode(inh, &dw);
+//      if (!pipestdin) {
+//        SetConsoleMode(inh, dw & ~(ENABLE_MOUSE_INPUT | ENABLE_WINDOW_INPUT));
+//        FlushConsoleInputBuffer(inh);
+//      }
+//    }
+//    if (pipestdin) {
+//      if (!PeekNamedPipe(inh, NULL, 0, NULL, &dw, NULL)) {
+//        return 1;
+//      }
+//      return dw;
+//	} else {
+//      GetNumberOfConsoleInputEvents(inh, &dw);
+//      return dw <= 1 ? 0 : dw;
+//    }
+//  } else {
+//    i = _kbhit();
+//  }
+//  return i;
+	return 0;
 }
 #endif
+
 #if defined(UNIX)
 /* Simple UNIX approach using select with a zero timeout value */
 int CheckInput(void) {
@@ -325,19 +313,21 @@ int CheckInput(void) {
   struct timeval tv;
   int data;
 
-  if (!xboard && !isatty(fileno(stdin)))
-    return 0;
-  if (batch_mode)
-    return 0;
-  if (strchr(cmd_buffer, '\n'))
-    return 1;
-  FD_ZERO(&readfds);
-  FD_SET(fileno(stdin), &readfds);
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
-  select(16, &readfds, 0, 0, &tv);
-  data = FD_ISSET(fileno(stdin), &readfds);
-  return data;
+  //if (!xboard && !isatty(fileno(stdin)))
+  //  return 0;
+  //if (batch_mode)
+  //  return 0;
+  //if (strchr(cmd_buffer, '\n'))
+  //  return 1;
+  //FD_ZERO(&readfds);
+  //FD_SET(fileno(stdin), &readfds);
+  //tv.tv_sec = 0;
+  //tv.tv_usec = 0;
+  //select(16, &readfds, 0, 0, &tv);
+  //data = FD_ISSET(fileno(stdin), &readfds);
+  //return data;
+
+  return 0;
 }
 #endif
 
@@ -520,28 +510,28 @@ void DisplayArray(int *array, int size) {
   if (size > 0 && size % 16 == 0 && len == 8)
     len = 16;
   if (size > 0) {
-    printf("    ");
+    _printf("    ");
     for (i = 0; i < size; i++) {
-      printf("%3d ", array[i]);
+      _printf("%3d ", array[i]);
       if ((i + 1) % len == 0) {
-        printf("\n");
+        _printf("\n");
         if (i < size - 1)
-          printf("    ");
+          _printf("    ");
       }
     }
     if (i % len != 0)
-      printf("\n");
+      _printf("\n");
   }
   if (size < 0) {
     for (i = 0; i < 8; i++) {
-      printf("    ");
+      _printf("    ");
       for (j = 0; j < 8; j++) {
-        printf("%3d ", array[(7 - i) * 8 + j]);
+        _printf("%3d ", array[(7 - i) * 8 + j]);
       }
-      printf(" | %d\n", 8 - i);
+      _printf(" | %d\n", 8 - i);
     }
-    printf("    ---------------------------------\n");
-    printf("      a   b   c   d   e   f   g   h\n");
+    _printf("    ---------------------------------\n");
+    _printf("      a   b   c   d   e   f   g   h\n");
   }
 }
 
@@ -559,55 +549,55 @@ void DisplayArrayX2(int *array, int *array2, int size) {
   int i, j;
 
   if (size == 256) {
-    printf("    ----------- Middlegame -----------   ");
-    printf("    ------------- Endgame -----------\n");
+    _printf("    ----------- Middlegame -----------   ");
+    _printf("    ------------- Endgame -----------\n");
     for (i = 0; i < 8; i++) {
-      printf("    ");
+      _printf("    ");
       for (j = 0; j < 8; j++)
-        printf("%3d ", array[(7 - i) * 8 + j]);
-      printf("  |  %d  |", 8 - i);
-      printf("  ");
+        _printf("%3d ", array[(7 - i) * 8 + j]);
+      _printf("  |  %d  |", 8 - i);
+      _printf("  ");
       for (j = 0; j < 8; j++)
-        printf("%3d ", array2[(7 - i) * 8 + j]);
-      printf("\n");
+        _printf("%3d ", array2[(7 - i) * 8 + j]);
+      _printf("\n");
     }
-    printf
+    _printf
         ("    ----------------------------------       ---------------------------------\n");
-    printf("      a   b   c   d   e   f   g   h        ");
-    printf("      a   b   c   d   e   f   g   h\n");
+    _printf("      a   b   c   d   e   f   g   h        ");
+    _printf("      a   b   c   d   e   f   g   h\n");
   } else if (size == 32) {
-    printf("    ----------- Middlegame -----------   ");
-    printf("    ------------- Endgame -----------\n");
-    printf("    ");
+    _printf("    ----------- Middlegame -----------   ");
+    _printf("    ------------- Endgame -----------\n");
+    _printf("    ");
     for (i = 0; i < 8; i++)
-      printf("%3d ", array[i]);
-    printf("  |     |");
-    printf("  ");
+      _printf("%3d ", array[i]);
+    _printf("  |     |");
+    _printf("  ");
     for (i = 0; i < 8; i++)
-      printf("%3d ", array2[i]);
-    printf("\n");
+      _printf("%3d ", array2[i]);
+    _printf("\n");
   } else if (size <= 20) {
     size = size / 2;
-    printf("    ");
+    _printf("    ");
     for (i = 0; i < size; i++)
-      printf("%3d ", array[i]);
-    printf("  |<mg    eg>|");
-    printf("  ");
+      _printf("%3d ", array[i]);
+    _printf("  |<mg    eg>|");
+    _printf("  ");
     for (i = 0; i < size; i++)
-      printf("%3d ", array2[i]);
-    printf("\n");
+      _printf("%3d ", array2[i]);
+    _printf("\n");
   } else if (size > 128) {
-    printf("    ----------- Middlegame -----------   ");
-    printf("    ------------- Endgame -----------\n");
+    _printf("    ----------- Middlegame -----------   ");
+    _printf("    ------------- Endgame -----------\n");
     for (i = 0; i < size / 32; i++) {
-      printf("    ");
+      _printf("    ");
       for (j = 0; j < 8; j++)
-        printf("%3d ", array[(7 - i) * 8 + j]);
-      printf("  |  %d  |", 8 - i);
-      printf("  ");
+        _printf("%3d ", array[(7 - i) * 8 + j]);
+      _printf("  |  %d  |", 8 - i);
+      _printf("  ");
       for (j = 0; j < 8; j++)
-        printf("%3d ", array2[(7 - i) * 8 + j]);
-      printf("\n");
+        _printf("%3d ", array2[(7 - i) * 8 + j]);
+      _printf("\n");
     }
   } else
     Print(4095, "ERROR, invalid size = -%d in packet\n", size);
@@ -629,10 +619,10 @@ void DisplayBitBoard(uint64_t board) {
     x = (board >> i) & 255;
     for (j = 1; j < 256; j = j << 1)
       if (x & j)
-        printf("X ");
+        _printf("X ");
       else
-        printf("- ");
-    printf("\n");
+        _printf("- ");
+    _printf("\n");
   }
 }
 
@@ -653,17 +643,17 @@ void Display2BitBoards(uint64_t board1, uint64_t board2) {
     x = (board1 >> i) & 255;
     for (j = 1; j < 256; j = j << 1)
       if (x & j)
-        printf("X ");
+        _printf("X ");
       else
-        printf("- ");
-    printf("    ");
+        _printf("- ");
+    _printf("    ");
     y = (board2 >> i) & 255;
     for (j = 1; j < 256; j = j << 1)
       if (y & j)
-        printf("X ");
+        _printf("X ");
       else
-        printf("- ");
-    printf("\n");
+        _printf("- ");
+    _printf("\n");
   }
 }
 
@@ -707,15 +697,15 @@ void DisplayChessBoard(FILE * display_file, POSITION pos) {
  *                                                          *
  ************************************************************
  */
-  //fprintf(display_file, "\n       +---+---+---+---+---+---+---+---+\n");
-  //for (i = 7; i >= 0; i--) {
-  //  fprintf(display_file, "   %2d  ", i + 1);
-  //  for (j = 0; j < 8; j++)
-  //    fprintf(display_file, "|%s", display_string[display_board[i * 8 + j]]);
-  //  fprintf(display_file, "|\n");
-  //  fprintf(display_file, "       +---+---+---+---+---+---+---+---+\n");
-  //}
-  //fprintf(display_file, "         a   b   c   d   e   f   g   h\n\n");
+ fprintf(display_file, "\n       +---+---+---+---+---+---+---+---+\n");
+  for (i = 7; i >= 0; i--) {
+    fprintf(display_file, "   %2d  ", i + 1);
+    for (j = 0; j < 8; j++)
+      fprintf(display_file, "|%s", display_string[display_board[i * 8 + j]]);
+    fprintf(display_file, "|\n");
+    fprintf(display_file, "       +---+---+---+---+---+---+---+---+\n");
+  }
+  fprintf(display_file, "         a   b   c   d   e   f   g   h\n\n");
 }
 
 /*
@@ -1092,7 +1082,7 @@ void DisplayTreeState(TREE * RESTRICT tree, int sply, int spos, int maxply) {
     if (sply > 1)
       break;
   }
-  printf("%s\n", buf);
+  _printf("%s\n", buf);
   if (sply == 1 && tree->nprocs) {
     for (i = 0; i < smp_max_threads; i++)
       if (tree->siblings[i])
@@ -1112,22 +1102,22 @@ void DisplayTreeState(TREE * RESTRICT tree, int sply, int spos, int maxply) {
 void DisplayType3(int *array, int *array2) {
   int i, j;
 
-  printf("    ----------- Middlegame -----------   ");
-  printf("    ------------- Endgame -----------\n");
+  _printf("    ----------- Middlegame -----------   ");
+  _printf("    ------------- Endgame -----------\n");
   for (i = 0; i < 8; i++) {
-    printf("    ");
+    _printf("    ");
     for (j = 0; j < 8; j++)
-      printf("%3d ", array[64 + (7 - i) * 8 + j]);
-    printf("  |  %d  |", 8 - i);
-    printf("  ");
+      _printf("%3d ", array[64 + (7 - i) * 8 + j]);
+    _printf("  |  %d  |", 8 - i);
+    _printf("  ");
     for (j = 0; j < 8; j++)
-      printf("%3d ", array2[64 + (7 - i) * 8 + j]);
-    printf("\n");
+      _printf("%3d ", array2[64 + (7 - i) * 8 + j]);
+    _printf("\n");
   }
-  printf
+  _printf
       ("    ----------------------------------       ---------------------------------\n");
-  printf("      a   b   c   d   e   f   g   h        ");
-  printf("      a   b   c   d   e   f   g   h\n");
+  _printf("      a   b   c   d   e   f   g   h        ");
+  _printf("      a   b   c   d   e   f   g   h\n");
 }
 
 /*
@@ -1142,22 +1132,22 @@ void DisplayType3(int *array, int *array2) {
 void DisplayType4(int *array, int *array2) {
   int i, j;
 
-  printf("    ----------- Middlegame -----------   ");
-  printf("    ------------- Endgame -----------\n");
+  _printf("    ----------- Middlegame -----------   ");
+  _printf("    ------------- Endgame -----------\n");
   for (i = 0; i < 8; i++) {
-    printf("    ");
+    _printf("    ");
     for (j = 0; j < 8; j++)
-      printf("%3d ", array[(7 - i) * 8 + j]);
-    printf("  |  %d  |", 8 - i);
-    printf("  ");
+      _printf("%3d ", array[(7 - i) * 8 + j]);
+    _printf("  |  %d  |", 8 - i);
+    _printf("  ");
     for (j = 0; j < 8; j++)
-      printf("%3d ", array2[(7 - i) * 8 + j]);
-    printf("\n");
+      _printf("%3d ", array2[(7 - i) * 8 + j]);
+    _printf("\n");
   }
-  printf
+  _printf
       ("    ----------------------------------       ---------------------------------\n");
-  printf("      a   b   c   d   e   f   g   h        ");
-  printf("      a   b   c   d   e   f   g   h\n");
+  _printf("      a   b   c   d   e   f   g   h        ");
+  _printf("      a   b   c   d   e   f   g   h\n");
 }
 
 /*
@@ -1170,10 +1160,10 @@ void DisplayType4(int *array, int *array2) {
 void DisplayType5(int *array, int size) {
   int i;
 
-  printf("   ");
+  _printf("   ");
   for (i = 0; i < size; i++)
-    printf("%4d ", array[i]);
-  printf("\n");
+    _printf("%4d ", array[i]);
+  _printf("\n");
 }
 
 /*
@@ -1187,16 +1177,16 @@ void DisplayType5(int *array, int size) {
 void DisplayType6(int *array) {
   int i;
 
-  printf("    ----------- Middlegame ------------ ");
-  printf("    ------------- Endgame ------------\n");
-  printf("    ");
+  _printf("    ----------- Middlegame ------------ ");
+  _printf("    ------------- Endgame ------------\n");
+  _printf("    ");
   for (i = 0; i < 8; i++)
-    printf("%3d ", array[i]);
-  printf("  |     |");
-  printf("  ");
+    _printf("%3d ", array[i]);
+  _printf("  |     |");
+  _printf("  ");
   for (i = 8; i < 16; i++)
-    printf("%3d ", array[i]);
-  printf("\n");
+    _printf("%3d ", array[i]);
+  _printf("\n");
 }
 
 /*
@@ -1325,10 +1315,10 @@ void EGTBPV(TREE * RESTRICT tree, int wtm) {
         if (*(next + 64 + i) == ' ')
           break;
       *(next + 64 + i) = 0;
-      printf("%s\n", next);
+      _printf("%s\n", next);
       next += 64 + i + 1;
     } else {
-      printf("%s\n", next);
+      _printf("%s\n", next);
       break;
     }
   }
@@ -1643,7 +1633,7 @@ void NewGame(int save) {
       LearnBook();
     }
     if (xboard) {
-      printf("tellicsnoalias set 1 Crafty v%s (%d cpus)\n", version, Max(1,
+      _printf("tellicsnoalias set 1 Crafty v%s (%d cpus)\n", version, Max(1,
               smp_max_threads));
     }
     over = 0;
@@ -1677,7 +1667,7 @@ void NewGame(int save) {
         log_file = fopen(log_filename, "w");
         history_file = fopen(history_filename, "w+");
         if (!history_file) {
-          printf("ERROR, unable to open game history file, exiting\n");
+          _printf("ERROR, unable to open game history file, exiting\n");
           CraftyExit(1);
         }
       }
@@ -1788,7 +1778,7 @@ void Pass(void) {
  *   print is done, otherwise the print is skipped and we return (more details *
  *   can be found in the display command comments in option.c).  This also     *
  *   uses the "variable number of arguments" facility in ANSI C since the      *
- *   normal printf() function accepts a variable number of arguments.          *
+ *   normal _printf() function accepts a variable number of arguments.          *
  *                                                                             *
  *   Print() also sends output to the log.nnn file automatically, so that it   *
  *   is recorded even if the above display control variable says "do not send  *
@@ -1801,16 +1791,19 @@ void Print(int vb, char *fmt, ...) {
 
   va_start(ap, fmt);
   if (vb & display_options)
-    vprintf(fmt, ap);
-  fflush(stdout);
-  if (time_limit > -99 || tc_time_remaining[root_wtm] > 6000 || vb == 4095) {
-    va_start(ap, fmt);
-    if (log_file)
-      vfprintf(log_file, fmt, ap);
-    if (log_file)
-      fflush(log_file);
-  }
+	  jni_printf(fmt, ap);
+
   va_end(ap);
+  //vprintf(fmt, ap);
+  //fflush(stdout);
+  //if (time_limit > -99 || tc_time_remaining[root_wtm] > 6000 || vb == 4095) {
+  //  va_start(ap, fmt);
+  //  if (log_file)
+  //    vfprintf(log_file, fmt, ap);
+  //  if (log_file)
+  //    fflush(log_file);
+  //}
+  //va_end(ap);
 }
 
 /*
@@ -2402,47 +2395,47 @@ void Kibitz(int level, int wtm, int depth, int time, int value,
       case 1:
         if ((kibitz & 15) >= 1) {
           if (value > 0) {
-            printf("%s mate in %d moves.\n\n", prefix, value);
+            _printf("%s mate in %d moves.\n\n", prefix, value);
           }
           if (value < 0) {
-            printf("%s mated in %d moves.\n\n", prefix, -value);
+            _printf("%s mated in %d moves.\n\n", prefix, -value);
           }
         }
         break;
       case 2:
         if ((kibitz & 15) >= 2) {
-          printf("%s ply=%d; eval=%s; nps=%s; time=%s(%d%%); egtb=%d\n",
+          _printf("%s ply=%d; eval=%s; nps=%s; time=%s(%d%%); egtb=%d\n",
               prefix, depth, DisplayEvaluationKibitz(value, wtm),
               DisplayKMB(nps, 0), DisplayTimeKibitz(time), ip, tb_hits);
         }
       case 3:
         if ((kibitz & 15) >= 3 && (nodes > 5000 || level == 2)) {
-          printf("%s %s\n", prefix, pv);
+          _printf("%s %s\n", prefix, pv);
         }
         break;
       case 4:
         if ((kibitz & 15) >= 4) {
-          printf("%s %s\n", prefix, pv);
+          _printf("%s %s\n", prefix, pv);
         }
         break;
       case 5:
         if ((kibitz & 15) >= 5 && nodes > 5000) {
-          printf("%s d%d-> %s/s %s(%d%%) %s %s ", prefix, depth,
+          _printf("%s d%d-> %s/s %s(%d%%) %s %s ", prefix, depth,
               DisplayKMB(nps, 0), DisplayTimeKibitz(time), ip,
               DisplayEvaluationKibitz(value, wtm), pv);
           if (tb_hits)
-            printf("egtb=%d", tb_hits);
-          printf("\n");
+            _printf("egtb=%d", tb_hits);
+          _printf("\n");
         }
         break;
       case 6:
         if ((kibitz & 15) >= 6 && nodes > 5000) {
           if (wtm)
-            printf("%s d%d+ %s/s %s(%d%%) >(%s) %s <re-searching>\n", prefix,
+            _printf("%s d%d+ %s/s %s(%d%%) >(%s) %s <re-searching>\n", prefix,
                 depth, DisplayKMB(nps, 0), DisplayTimeKibitz(time), ip,
                 DisplayEvaluationKibitz(value, wtm), pv);
           else
-            printf("%s d%d+ %s/s %s(%d%%) <(%s) %s <re-searching>\n", prefix,
+            _printf("%s d%d+ %s/s %s(%d%%) <(%s) %s <re-searching>\n", prefix,
                 depth, DisplayKMB(nps, 0), DisplayTimeKibitz(time), ip,
                 DisplayEvaluationKibitz(value, wtm), pv);
         }
@@ -2451,10 +2444,10 @@ void Kibitz(int level, int wtm, int depth, int time, int value,
     value = (wtm) ? value : -value;
     if (post && level > 1) {
       if (strstr(pv, "book"))
-        printf("	%2d  %5d %7d %" PRIu64 " %s\n", depth, value, time,
+        _printf("	%2d  %5d %7d %" PRIu64 " %s\n", depth, value, time,
             nodes, pv + 10);
       else
-        printf("	%2d  %5d %7d %" PRIu64 " %s\n", depth, value, time,
+        _printf("	%2d  %5d %7d %" PRIu64 " %s\n", depth, value, time,
             nodes, pv);
     }
     fflush(stdout);
@@ -2538,20 +2531,20 @@ void Trace(TREE * RESTRICT tree, int ply, int depth, int wtm, int alpha,
 
   Lock(lock_io);
   for (i = 1; i < ply; i++)
-    printf("  ");
+    _printf("  ");
   if (phase != EVALUATION) {
-    printf("%d  %s d:%2d [%s,", ply, OutputMove(tree, tree->curmv[ply], ply,
+    _printf("%d  %s d:%2d [%s,", ply, OutputMove(tree, tree->curmv[ply], ply,
             wtm), depth, DisplayEvaluation(alpha, 1));
-    printf("%s] n:%" PRIu64 " %s(%d)", DisplayEvaluation(beta, 1),
+    _printf("%s] n:%" PRIu64 " %s(%d)", DisplayEvaluation(beta, 1),
         (tree->nodes_searched), name, phase);
     if (smp_max_threads > 1)
-      printf(" (t=%d) ", tree->thread_id);
-    printf("\n");
+      _printf(" (t=%d) ", tree->thread_id);
+    _printf("\n");
   } else {
-    printf("%d window/eval(%s) = {", ply, name);
-    printf("%s, ", DisplayEvaluation(alpha, 1));
-    printf("%s, ", DisplayEvaluation(depth, 1));
-    printf("%s}\n", DisplayEvaluation(beta, 1));
+    _printf("%d window/eval(%s) = {", ply, name);
+    _printf("%s, ", DisplayEvaluation(alpha, 1));
+    _printf("%s, ", DisplayEvaluation(depth, 1));
+    _printf("%s}\n", DisplayEvaluation(beta, 1));
   }
   fflush(0);
   Unlock(lock_io);
@@ -2774,7 +2767,7 @@ static void WinNumaInit(void) {
   if (!fThreadsInitialized) {
     Lock(ThreadsLock);
     if (!fThreadsInitialized) {
-      printf("\nInitializing multiple threads.\n");
+      _printf("\nInitializing multiple threads.\n");
       fThreadsInitialized = TRUE;
       hModule = GetModuleHandle("kernel32");
       pGetNumaHighestNodeNumber =
@@ -2788,12 +2781,12 @@ static void WinNumaInit(void) {
         fSystemIsNUMA = TRUE;
         if (ulNumaNodes > 255)
           ulNumaNodes = 255;
-        printf("System is NUMA. %d nodes reported by Windows\n",
+        _printf("System is NUMA. %d nodes reported by Windows\n",
             ulNumaNodes + 1);
         for (ulNode = 0; ulNode <= ulNumaNodes; ulNode++) {
           pGetNumaNodeProcessorMask((UCHAR) ulNode,
               &ullProcessorMask[ulNode]);
-          printf("Node %d CPUs: ", ulNode);
+          _printf("Node %d CPUs: ", ulNode);
           ullMask = ullProcessorMask[ulNode];
           if (0 == ullMask)
             fSystemIsNUMA = FALSE;
@@ -2801,25 +2794,25 @@ static void WinNumaInit(void) {
             ulCPU = 0;
             do {
               if (ullMask & 1)
-                printf("%d ", ulCPU);
+                _printf("%d ", ulCPU);
               ulCPU++;
               ullMask >>= 1;
             } while (ullMask);
           }
-          printf("\n");
+          _printf("\n");
         }
 // Thread 0 was already started on some CPU. To simplify things further,
 // exchange ullProcessorMask[0] and ullProcessorMask[node for that CPU],
 // so ullProcessorMask[0] would always be node for thread 0
         dwCPU =
             pSetThreadIdealProcessor(GetCurrentThread(), MAXIMUM_PROCESSORS);
-        printf("Current ideal CPU is %u\n", dwCPU);
+        _printf("Current ideal CPU is %u\n", dwCPU);
         pSetThreadIdealProcessor(GetCurrentThread(), dwCPU);
         if ((((DWORD) - 1) != dwCPU) && (MAXIMUM_PROCESSORS != dwCPU)
             && !(ullProcessorMask[0] & (1u << dwCPU))) {
           for (ulNode = 1; ulNode <= ulNumaNodes; ulNode++) {
             if (ullProcessorMask[ulNode] & (1u << dwCPU)) {
-              printf("Exchanging nodes 0 and %d\n", ulNode);
+              _printf("Exchanging nodes 0 and %d\n", ulNode);
               ullMask = ullProcessorMask[ulNode];
               ullProcessorMask[ulNode] = ullProcessorMask[0];
               ullProcessorMask[0] = ullMask;
@@ -2828,7 +2821,7 @@ static void WinNumaInit(void) {
           }
         }
       } else
-        printf("System is SMP, not NUMA.\n");
+        _printf("System is SMP, not NUMA.\n");
     }
     Unlock(ThreadsLock);
   }
@@ -2846,7 +2839,7 @@ pthread_t NumaStartThread(void *func, void *args) {
     if (ulNumaNode > ulNumaNodes)
       ulNumaNode = 0;
     ullMask = ullProcessorMask[ulNumaNode];
-    printf("Starting thread on node %d CPU mask %I64d\n", ulNumaNode,
+    _printf("Starting thread on node %d CPU mask %I64d\n", ulNumaNode,
         ullMask);
     SetThreadAffinityMask(GetCurrentThread(), (DWORD_PTR) ullMask);
     hThread = (HANDLE) _beginthreadex(0, 0, func, args, CREATE_SUSPENDED, 0);
@@ -2906,7 +2899,7 @@ void *WinMallocInterleaved(size_t cbBytes, int cThreads) {
 // Reserve pages in the process's virtual address space.
     pBase = (char *) VirtualAlloc(NULL, cbBytes, MEM_RESERVE, PAGE_NOACCESS);
     if (pBase == NULL) {
-      printf("VirtualAlloc() reserve failed\n");
+      _printf("VirtualAlloc() reserve failed\n");
       CraftyExit(0);
     }
 // Now walk through memory, committing each page

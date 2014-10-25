@@ -138,7 +138,7 @@ int Ponder(int wtm) {
   //          ponder_move, 0, wtm));
   //sprintf(hint, "%s", OutputMove(tree, ponder_move, 0, wtm));
   //if (post)
-  //  printf("Hint: %s\n", hint);
+  //  _printf("Hint: %s\n", hint);
 /*
  ************************************************************
  *                                                          *

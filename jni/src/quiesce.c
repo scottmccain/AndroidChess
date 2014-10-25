@@ -85,7 +85,7 @@ int Quiesce(TREE * RESTRICT tree, int alpha, int beta, int wtm, int ply,
         SavePV(tree, ply, 0);
 #if defined(TRACE)
       if (ply <= trace_level)
-        printf("draw by repetition detected, ply=%d.\n", ply);
+        _printf("draw by repetition detected, ply=%d.\n", ply);
 #endif
       return value;
     }
@@ -351,7 +351,7 @@ int QuiesceEvasions(TREE * RESTRICT tree, int alpha, int beta, int wtm,
       SavePV(tree, ply, 0);
 #if defined(TRACE)
     if (ply <= trace_level)
-      printf("draw by repetition detected, ply=%d.\n", ply);
+      _printf("draw by repetition detected, ply=%d.\n", ply);
 #endif
     return value;
   }
@@ -405,7 +405,7 @@ int QuiesceEvasions(TREE * RESTRICT tree, int alpha, int beta, int wtm,
       SavePV(tree, ply, 0);
 #if defined(TRACE)
       if (ply <= trace_level)
-        printf("Search() no moves!  ply=%d\n", ply);
+        _printf("Search() no moves!  ply=%d\n", ply);
 #endif
     }
     return value;

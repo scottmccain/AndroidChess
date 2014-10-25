@@ -118,16 +118,16 @@ int TimeCheck(TREE * RESTRICT tree, int busy) {
   //if (time_used > noise_level && display_options & 32 && time_used > burp) {
   //  Lock(lock_io);
   //  //if (pondering)
-  //    //printf("         %2i   %s%7s?  ", iteration_depth,
+  //    //_printf("         %2i   %s%7s?  ", iteration_depth,
   //    //    Display2Times(time_used), tree->remaining_moves_text);
   //  //else
-  //    //printf("         %2i   %s%7s*  ", iteration_depth,
+  //    //_printf("         %2i   %s%7s*  ", iteration_depth,
   //    //    Display2Times(time_used), tree->remaining_moves_text);
   //  if (display_options & 32 && display_options & 64)
-  //    printf("%d. ", move_number);
+  //    _printf("%d. ", move_number);
   //  if ((display_options & 32) && (display_options & 64) && Flip(root_wtm))
-  //    printf("... ");
-  //  printf("%s(%snps)             \r", tree->root_move_text,
+  //    _printf("... ");
+  //  _printf("%s(%snps)             \r", tree->root_move_text,
   //      DisplayKMB(nodes_per_second, 0));
   //  burp = (time_used / 1500) * 1500 + 1500;
   //  fflush(stdout);

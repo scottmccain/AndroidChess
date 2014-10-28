@@ -1,0 +1,9 @@
+ponder on
+hash=256m
+hashp=64m
+egtb
+cache=32m
+swindle on
+mt=2
+speech on
+alarm off

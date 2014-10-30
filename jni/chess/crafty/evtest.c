@@ -117,7 +117,7 @@ void EVTest(char *filename) {
         strcpy(buffer, "flip");
         Option(tree);
         _printf("FEN = %s\n", buff);
-        DisplayChessBoard(stdout, tree->position);
+        DisplayChessBoard(tree->position);
         if (id)
           Print(4095, "id=%s  ", args[id + 1]);
         Print(4095, "wtm=%d  score=%d  %d (flop)  %d (flip)  %d (flop)\n",

@@ -590,6 +590,48 @@ void Display2BitBoards(uint64_t board1, uint64_t board2) {
   }
 }
 
+void DisplayChessBoard(POSITION pos) {
+  int display_board[64];
+  static const char display_string[16][4] =
+      { "<K>", "<Q>", "<R>", "<B>", "<N>", "<P>", "   ",
+    "-P-", "-N-", "-B-", "-R-", "-Q-", "-K-", " . "
+  };
+  int i, j;
+
+/*
+ ************************************************************
+ *                                                          *
+ *  First, convert square values to indices to the proper   *
+ *  text string.                                            *
+ *                                                          *
+ ************************************************************
+ */
+  for (i = 0; i < 64; i++) {
+    display_board[i] = pos.board[i] + 6;
+    if (pos.board[i] == 0) {
+      if (((i / 8) & 1) == ((i % 8) & 1))
+        display_board[i] = 13;
+    }
+  }
+/*
+ ************************************************************
+ *                                                          *
+ *  Now that that's done, simply display using 8 squares    *
+ *  per line.                                               *
+ *                                                          *
+ ************************************************************
+ */
+ Print(128, "\n       +---+---+---+---+---+---+---+---+\n");
+  for (i = 7; i >= 0; i--) {
+    Print(128, "   %2d  ", i + 1);
+    for (j = 0; j < 8; j++)
+      Print(128, "|%s", display_string[display_board[i * 8 + j]]);
+    Print(128, "|\n");
+    Print(128, "       +---+---+---+---+---+---+---+---+\n");
+  }
+  Print(128, "         a   b   c   d   e   f   g   h\n\n");
+}
+
 /*
  *******************************************************************************
  *                                                                             *
@@ -599,7 +641,7 @@ void Display2BitBoards(uint64_t board1, uint64_t board2) {
  *                                                                             *
  *******************************************************************************
  */
-void DisplayChessBoard(FILE * display_file, POSITION pos) {
+void DisplayChessBoardFile(FILE * display_file, POSITION pos) {
   int display_board[64];
   static const char display_string[16][4] =
       { "<K>", "<Q>", "<R>", "<B>", "<N>", "<P>", "   ",

@@ -1186,7 +1186,7 @@ void Bookup(TREE * RESTRICT tree, int nargs, char **args) {
                 Print(4095, "ERROR!  move %d: %s is illegal (line %d)\n",
                     move_num, buffer, ReadPGN(book_input, -2));
                 ReadPGN(book_input, -1);
-                DisplayChessBoard(stdout, tree->position);
+                DisplayChessBoard(tree->position);
                 do {
                   data_read = ReadPGN(book_input, 0);
                   if (data_read == -1)

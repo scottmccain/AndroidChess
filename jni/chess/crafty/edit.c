@@ -70,7 +70,7 @@ void Edit(void) {
     else if (!strcmp(args[0], "end") || (!strcmp(args[0], ".")))
       break;
     else if (!strcmp(args[0], "d"))
-      DisplayChessBoard(stdout, tree->position);
+      DisplayChessBoard(tree->position);
     else if (strlen(args[0]) == 3) {
       if (strchr(pieces, args[0][0])) {
         piece = (strchr(pieces, args[0][0]) - pieces) >> 1;
@@ -150,7 +150,7 @@ void Edit(void) {
   error += InvalidPosition(tree);
   if (!error) {
     if (log_file)
-      DisplayChessBoard(log_file, tree->position);
+      DisplayChessBoardFile(log_file, tree->position);
     wtm = 1;
     move_number = 1;
     tree->rep_index = 0;

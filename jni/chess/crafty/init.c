@@ -81,6 +81,9 @@ void Initialize() {
   id = InitializeGetLogID();
   sprintf(log_filename, "%s/log.%03d", log_path, id);
   sprintf(history_filename, "%s/game.%03d", log_path, id);
+
+  _printf("history_filename: %s", history_filename);
+
   log_file = fopen(log_filename, "w");
   history_file = fopen(history_filename, "w+");
   if (!history_file) {

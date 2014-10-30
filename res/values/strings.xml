@@ -6,5 +6,6 @@
     <string name="action_settings">Settings</string>
     <string name="send">Send</string>
     <string name="native_label">From Native Layer:</string>
-
+    <string name="command_hint">Enter Command</string>
+	 <string name="inputOKButton_description">Enter</string>
 </resources>

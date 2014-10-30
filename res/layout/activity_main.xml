@@ -1,59 +1,58 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     tools:context="com.example.chess.MainActivity" >
 
-        <TableRow
-            android:id="@+id/tableRow1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
+        <LinearLayout
+            android:id="@+id/upperLayout"
+       		android:orientation="horizontal"
+       		android:layout_width="fill_parent"
+       		android:layout_height="wrap_content">
  
+       <EditText 
+			android:id="@+id/inputBox" 
+			android:layout_width="0dp" 
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:singleLine="true"
+			android:hint="@string/command_hint"
+			android:inputType="text"
+			android:background="@android:drawable/editbox_background_normal"/>
+       
+		<ImageButton 
+			android:id="@+id/inputOKButton" 
+			android:layout_width="wrap_content" 
+			android:layout_height="wrap_content"
+			android:src="@drawable/enter"
+			android:contentDescription="@string/inputOKButton_description" />
  
- 
-            <EditText
-                android:id="@+id/etInput"
-                android:layout_width="220dp"
-                android:layout_height="wrap_content"
-                android:inputType="text"/>
- 
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/send"
-                android:onClick="cbSend"/>
- 
-        </TableRow>
+        </LinearLayout>
         
-        <TableRow
-            android:id="@+id/tableRow2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
- 
-            <TextView
-                android:id="@+id/native_label"
-                android:text="@string/native_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+        <com.example.chess.ConsoleScrollView
+       		android:id="@+id/consoleScrollView"
+       		android:layout_width="fill_parent" 
+       		android:layout_height="wrap_content">
             
-        </TableRow>
+	       <LinearLayout
+	          android:id="@+id/verticalLayout"
+	          android:orientation="vertical"
+	          android:layout_width="fill_parent"
+	          android:layout_height="wrap_content">
 
-        <TableRow
-            android:id="@+id/tableRow3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <TextView
-                android:id="@+id/lblFromNative"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="" />
- 
-        </TableRow>
-</TableLayout>
+	          	<com.example.chess.ConsoleTextView
+	          	    xmlns:consoletext="http://schemas.android.com/apk/res-auto"
+	          	    
+					   android:id="@+id/textView"
+				 		android:layout_width="match_parent"
+				 		android:layout_height="match_parent"
+						consoletext:backgroundColor="#ff000000"
+				    	consoletext:textColor="#ff00cc00"
+				    	consoletext:textSize="12sp" />
+	          	
+	       </LinearLayout>
+	                   
+        </com.example.chess.ConsoleScrollView>            
+</LinearLayout>

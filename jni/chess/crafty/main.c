@@ -4,6 +4,437 @@
 #include <pwd.h>
 #include <sys/types.h>
 #include <signal.h>
+
+
+int chess_main(int argc, char **argv) {
+	int move, readstat;
+	int value = 0, i, result;
+	int draw_type;
+
+	TREE *tree;
+
+	AlignedMalloc((void *) ((void *) &tree), 2048, (size_t) sizeof(TREE));
+	block[0] = tree;
+	tree->parent = 0;
+	tree->used = 1;
+	tree->stop = 0;
+	tree->ply = 1;
+	tree->nprocs = 0;
+	tree->thread_id = 0;
+
+	for (i = 0; i < 512; i++)
+		args[i] = (char *) malloc(256);
+
+
+	if (argc > 0) {
+		for (i = 0; i < argc; i++) {
+			if (strstr(argv[i], "path") || strstr(argv[i], "log")) {
+				strcpy(buffer, argv[i]);
+				result = Option(tree);
+
+				if (result == 0)
+					_printf("ERROR \"%s\" is unknown command-line option\n", buffer);
+
+				display = tree->position;
+			}
+		}
+	}
+
+	/*
+	************************************************************
+	*                                                          *
+	*   Initialize all data arrays and chess board.            *
+	*                                                          *
+	************************************************************
+	*/
+	Initialize();
+
+	display = tree->position;
+	initialized = 1;
+	move_actually_played = 0;
+
+	Print(128, "\nCrafty v%s (%d cpus)\n\n", version, Max(smp_max_threads, 1));
+	NewGame(1);
+
+	while(1) {
+    presult = 0;
+    do {
+
+    	if (new_game)
+    		NewGame(0);
+
+    	opponent_start_time = ReadClock();
+        input_status = 0;
+        display = tree->position;
+        move = 0;
+        presult = 0;
+
+        do {
+			if (presult != 2)
+				presult = 0;
+
+			result = 0;
+
+			display = tree->position;
+
+			if (presult != 2 && (move_number != 1 || !game_wtm))
+				presult = Ponder(game_wtm);
+
+			if (presult == 1)
+				value = last_root_value;
+			else if (presult == 2)
+				value = ponder_value;
+
+			if (presult == 0 || presult == 2) {
+			  _printf("%s(%d): ", SideToMove(game_wtm), move_number);
+
+			  readstat = Read(1, buffer);
+			  if (log_file)
+				  fprintf(log_file, "%s(%d): %s\n", SideToMove(game_wtm),
+						  move_number, buffer);
+
+			  if (readstat < 0) {
+				  strcpy(buffer, "end");
+				  Option(tree);
+			  }
+			}
+
+			if (presult == 1)
+				break;
+
+			opponent_end_time = ReadClock();
+			result = Option(tree);
+
+			if (result == 0) {
+				nargs = ReadParse(buffer, args, " 	;");
+				move = InputMove(tree, args[0], 0, game_wtm, 0, 0);
+				result = !move;
+				if (move)
+					last_pv.path[1] = 0;
+			} else {
+				input_status = 0;
+				if (result == 3)
+					presult = 0;
+			}
+
+		} while (result > 0);
+
+		if (presult == 1)
+		  move = ponder_move;
+	/*
+	************************************************************
+	*                                                          *
+	*  We have a move.  Make the move (returned by InputMove)  *
+	*  and then change the side on move (wtm).                 *
+	*                                                          *
+	************************************************************
+	*/
+		if (result == 0) {
+		  fseek(history_file, ((move_number - 1) * 2 + 1 - game_wtm) * 10,
+			  SEEK_SET);
+		  fprintf(history_file, "%9s\n", OutputMove(tree, move, 0, game_wtm));
+		  MakeMoveRoot(tree, move, game_wtm);
+		  time_used_opponent = opponent_end_time - opponent_start_time;
+		  if (!force)
+			Print(1, "              time used: %s\n",
+				DisplayTime(time_used_opponent));
+		  TimeAdjust(time_used_opponent, game_wtm);
+		  game_wtm = Flip(game_wtm);
+		  if (game_wtm)
+			move_number++;
+		  move_actually_played = 1;
+		  last_opponent_move = move;
+	/*
+	************************************************************
+	*                                                          *
+	*  From this point forward, we are in a state where it is  *
+	*                                                          *
+	*              C R A F T Y ' S turn to move.               *
+	*                                                          *
+	************************************************************
+	*/
+	/*
+	************************************************************
+	*                                                          *
+	*  We have made the indicated move, before we do a search  *
+	*  we need to determine if the present position is a draw  *
+	*  by rule.  If so, Crafty allowed it to happen and must   *
+	*  be satisfied with a draw, so we will claim it and end   *
+	*  the current game.                                       *
+	*                                                          *
+	************************************************************
+	*/
+		  if ((draw_type = Repeat3x(tree)) == 1) {
+			Print(128, "I claim a draw by 3-fold repetition.\n");
+			value = DrawScore(game_wtm);
+		  }
+		  if (draw_type == 2) {
+			Print(128, "I claim a draw by the 50 move rule.\n");
+			value = DrawScore(game_wtm);
+		  }
+		  if (Drawn(tree, last_search_value) == 2) {
+			Print(128, "I claim a draw due to insufficient material.\n");
+		  }
+		} else {
+		  tree->status[1] = tree->status[0];
+		  presult = 0;
+		}
+  } while (force);
+
+
+    /************************************************************
+    *                                                          *
+    *  Now call Iterate() to compute a move for the current    *
+    *  position.  (Note this is not done if Ponder() has al-   *
+    *  ready computed a move.)                                 *
+    *                                                          *
+    ************************************************************
+    */
+       crafty_is_white = game_wtm;
+       if (presult == 2) {
+         if (From(ponder_move) == From(move) && To(ponder_move) == To(move)
+             && Piece(ponder_move) == Piece(move)
+             && Captured(ponder_move) == Captured(move)
+             && Promote(ponder_move) == Promote(move)) {
+           presult = 1;
+           if (!book_move)
+             predicted++;
+         } else
+           presult = 0;
+       }
+       ponder_move = 0;
+       thinking = 1;
+       if (presult != 1) {
+         strcpy(kibitz_text, "n/a");
+         last_pv.pathd = 0;
+         last_pv.pathl = 0;
+         display = tree->position;
+         value = Iterate(game_wtm, think, 0);
+       }
+   /*
+    ************************************************************
+    *                                                          *
+    *  We've now completed a search and need to handle a       *
+    *  pending draw offer based on what the search found.      *
+    *                                                          *
+    *  When we get a draw offer, we make a note, but we do not *
+    *  accept it until after we have a chance to see what      *
+    *  happens after making the opponent's move that came with *
+    *  the draw offer.  If he played a blunder, we are not     *
+    *  going to mistakenly accept a draw when we are now       *
+    *  winning.  We make this decision to accept or decline    *
+    *  since we have completed as search and now have a real   *
+    *  score.                                                  *
+    *                                                          *
+    ************************************************************
+    */
+       if (draw_offer_pending) {
+         int drawsc = abs_draw_score;
+
+         draw_offer_pending = 0;
+         if (move_number < 40 || !accept_draws)
+           drawsc = -300;
+         if (value <= drawsc && (tc_increment != 0 ||
+                 tc_time_remaining[Flip(game_wtm)] >= 1000)) {
+           Print(128, "Draw accepted.\n");
+           Print(4095, "1/2-1/2 {Draw agreed}\n");
+           strcpy(pgn_result, "1/2-1/2");
+         } else {
+        	 Print(4095, "Draw declined.\n");
+         }
+       }
+   /*
+    ************************************************************
+    *                                                          *
+    *  If the last_pv.path is null, then we were either        *
+    *  checkmated or stalemated.  We need to determine which   *
+    *  and end the game appropriately.                         *
+    *                                                          *
+    *  If we do have a PV, we will also check to see if it     *
+    *  leads to mate and make the proper announcement if so.   *
+    *                                                          *
+    ************************************************************
+    */
+       last_pv = tree->pv[0];
+       last_value = value;
+       if (MateScore(last_value))
+         last_mate_score = last_value;
+       thinking = 0;
+       if (!last_pv.pathl) {
+         if (value == -MATE + 1) {
+           over = 1;
+           if (game_wtm) {
+             Print(4095, "0-1 {Black mates}\n");
+             strcpy(pgn_result, "0-1");
+           } else {
+             Print(4095, "1-0 {White mates}\n");
+             strcpy(pgn_result, "1-0");
+           }
+         } else {
+           over = 1;
+           Print(128, "stalemate\n");
+         }
+       } else {
+         if (value > 32000 && value < MATE - 2) {
+           Print(128, "\nmate in %d moves.\n\n", (MATE - value) / 2);
+           Kibitz(1, game_wtm, 0, 0, (MATE - value) / 2, tree->nodes_searched, 0,
+               0, " ");
+         } else if (-value > 32000 && -value < MATE - 1) {
+           Print(128, "\nmated in %d moves.\n\n", (MATE + value) / 2);
+           Kibitz(1, game_wtm, 0, 0, -(MATE + value) / 2, tree->nodes_searched,
+               0, 0, " ");
+         }
+   /*
+    ************************************************************
+    *                                                          *
+    *  See if we want to offer a draw based on the recent      *
+    *  scores that have been returned.  See resign.c for more  *
+    *  details, but this is where we offer a draw, or resign,  *
+    *  if appropriate.  This has nothing to do with claiming a *
+    *  draw by rule, which is done later.                      *
+    *                                                          *
+    ************************************************************
+    */
+         tree->status[MAXPLY] = tree->status[0];
+         ResignOrDraw(tree, value);
+   /*
+    ************************************************************
+    *                                                          *
+    *  Now output the move chosen by the search, and the       *
+    *  "result" string if this move checkmates our opponent.   *
+    *                                                          *
+    ************************************************************
+    */
+         Print(1, "%s(%d): %s\n", SideToMove(game_wtm), move_number,
+             OutputMove(tree, last_pv.path[1], 0, game_wtm));
+         if (value == MATE - 2) {
+           if (game_wtm) {
+             Print(4095, "1-0 {White mates}\n");
+             strcpy(pgn_result, "1-0");
+           } else {
+             Print(4095, "0-1 {Black mates}\n");
+             strcpy(pgn_result, "0-1");
+           }
+         }
+         time_used = program_end_time - program_start_time;
+         Print(1, "              time used: %s\n", DisplayTime(time_used));
+         TimeAdjust(time_used, game_wtm);
+         fseek(history_file, ((move_number - 1) * 2 + 1 - game_wtm) * 10,
+             SEEK_SET);
+         fprintf(history_file, "%9s\n", OutputMove(tree, last_pv.path[1], 0,
+                 game_wtm));
+         last_search_value = value;
+         if (kibitz) {
+           if (kibitz_depth)
+             Kibitz(2, game_wtm, kibitz_depth, end_time - start_time, value,
+                 tree->nodes_searched, idle_percent,
+                 tree->egtb_probes_successful, kibitz_text);
+           else
+             Kibitz(4, game_wtm, 0, 0, 0, 0, 0, 0, kibitz_text);
+         }
+         MakeMoveRoot(tree, last_pv.path[1], game_wtm);
+   /*
+    ************************************************************
+    *                                                          *
+    *  From this point forward, we are in a state where it is  *
+    *                                                          *
+    *          O P P O N E N T ' S turn to move.               *
+    *                                                          *
+    *  We have made the indicated move, we need to determine   *
+    *  if the present position is a draw by rule.  If so, we   *
+    *  need to send the appropriate game result to xboard      *
+    *  and/or inform the operator/opponent.                    *
+    *                                                          *
+    ************************************************************
+    */
+         game_wtm = Flip(game_wtm);
+         if (game_wtm)
+           move_number++;
+         move_actually_played = 1;
+         if ((draw_type = Repeat3x(tree)) == 1) {
+           Print(128, "I claim a draw by 3-fold repetition after my move.\n");
+           if (xboard)
+             Print(4095, "1/2-1/2 {Drawn by 3-fold repetition}\n");
+           value = DrawScore(game_wtm);
+         }
+         if (draw_type == 2 && last_search_value < 32000) {
+           Print(128, "I claim a draw by the 50 move rule after my move.\n");
+           if (xboard)
+             Print(4095, "1/2-1/2 {Drawn by 50-move rule}\n");
+           value = DrawScore(game_wtm);
+         }
+         if (Drawn(tree, last_search_value) == 2) {
+           Print(128,
+               "I claim a draw due to insufficient material after my move.\n");
+           if (xboard)
+             Print(4095, "1/2-1/2 {Insufficient material}\n");
+         }
+         if (time_limit > 300)
+           if (log_file)
+             DisplayChessBoardFile(log_file, tree->position);
+   /*
+    ************************************************************
+    *                                                          *
+    *  Save the ponder_move from the current principal         *
+    *  variation, then shift it left two moves to use as the   *
+    *  starting point for the next search.  Adjust the depth   *
+    *  to start the next search at the right iteration.        *
+    *                                                          *
+    ************************************************************
+    */
+         if (last_pv.pathl > 2 && VerifyMove(tree, 0, game_wtm, last_pv.path[2])) {
+           ponder_move = last_pv.path[2];
+           for (i = 1; i < (int) last_pv.pathl - 2; i++)
+             last_pv.path[i] = last_pv.path[i + 2];
+           last_pv.pathl = (last_pv.pathl > 2) ? last_pv.pathl - 2 : 0;
+           last_pv.pathd -= 2;
+           if (last_pv.pathd > last_pv.pathl)
+             last_pv.pathd = last_pv.pathl;
+           if (last_pv.pathl == 0)
+             last_pv.pathd = 0;
+         } else {
+           last_pv.pathd = 0;
+           last_pv.pathl = 0;
+           ponder_move = 0;
+         }
+       }
+       if ((i = GameOver(game_wtm))) {
+         if (i == 1)
+           Print(4095, "1/2-1/2 {stalemate}\n");
+       }
+       if (book_move) {
+         moves_out_of_book = 0;
+         predicted++;
+         if (ponder_move)
+           sprintf(book_hint, "%s", OutputMove(tree, ponder_move, 0, game_wtm));
+       } else
+         moves_out_of_book++;
+   /*
+    ************************************************************
+    *                                                          *
+    *  Now execute LearnValue() to record the scores for the   *
+    *  first N searches out of book.  see learn.c for details  *
+    *  on how this is used and when.                           *
+    *                                                          *
+    ************************************************************
+    */
+       if (learning && moves_out_of_book && !learn_value)
+         LearnValue(last_value, last_pv.pathd + 2);
+       if (learn_positions_count < 63) {
+         learn_seekto[learn_positions_count] = book_learn_seekto;
+         learn_key[learn_positions_count] = book_learn_key;
+         learn_nmoves[learn_positions_count++] = book_learn_nmoves;
+       }
+       if (mode == tournament_mode) {
+         strcpy(buffer, "clock");
+         Option(tree);
+         Print(128, "if clocks are wrong, use 'settc' command to adjust them\n");
+       }
+     }
+
+	return 0;
+}
+
 /* last modified 02/24/14 */
 /*
  *******************************************************************************
@@ -4211,7 +4642,6 @@ int main(int argc, char **argv) {
         if (presult == 0 || presult == 2) {
           if (!xboard) {
             _printf("%s(%d): ", SideToMove(game_wtm), move_number);
-            fflush(stdout);
           }
           readstat = Read(1, buffer);
           if (log_file)
@@ -4536,7 +4966,7 @@ int main(int argc, char **argv) {
       if (time_limit > 300)
 #endif
         if (log_file)
-          DisplayChessBoard(log_file, tree->position);
+          DisplayChessBoardFile(log_file, tree->position);
 /*
  ************************************************************
  *                                                          *

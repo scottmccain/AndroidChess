@@ -18,6 +18,7 @@ public class LibWrapper {
 	
 	public static native void SendMessage(String str);
 	public static native void NativeInit(String apkDirectory, String cacheDirectory, String dataDirectory);
+	public static native int ChessMain(String[] argv);
 	
 	private static void OnMessage(String text){
 	    Log.e(TAG, "text:"+text);

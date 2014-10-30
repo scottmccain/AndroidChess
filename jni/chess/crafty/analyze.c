@@ -157,7 +157,7 @@ void Analyze() {
         display = tree->position;
         last_mate_score = 0;
         if (log_file)
-          DisplayChessBoard(log_file, tree->position);
+          DisplayChessBoardFile(log_file, tree->position);
       }
 /*
  ************************************************************

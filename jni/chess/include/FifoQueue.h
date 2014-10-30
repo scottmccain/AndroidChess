@@ -6,7 +6,8 @@
 #define _FIFO_Q_INCLUDE
 
 #include <iostream>
-#include <iterator>     // std::istream_iterator
+#include <iterator>
+#include <pthread.h>
 
 using namespace std;
 
@@ -96,15 +97,6 @@ T FifoQueue<T>::get() {
 	return n;
 }
 
-template <class T>
-ostream& operator<< (ostream& os, FifoQueue<T>& q) {
-
-	while(!q.empty()) {
-		os << q.get();
-	}
-
-	return os;
-}
 
 //Note how this is declared outside of the class body, so it is a free function instead of a memberfunction
 template<class T> inline std::ostream& operator<<(std::ostream& out, const FifoQueue<T>& val){

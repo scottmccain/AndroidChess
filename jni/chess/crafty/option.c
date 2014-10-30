@@ -501,7 +501,7 @@ int Option(TREE * RESTRICT tree) {
 	        return 1;
 	      } while (0);
 	    else
-	      DisplayChessBoard(stdout, display);
+	    	DisplayChessBoard(display);
 	  }
 	/*
 	 ************************************************************

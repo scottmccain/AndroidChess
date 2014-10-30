@@ -1,14 +1,42 @@
 #include <stdio.h>
-#include "defs.h"
 #include <zip.h>
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "logging.h"
+
 zip_file* file;
+struct zip* APKArchive;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+void loadAPK (const char* apkPath) {
+
+	int i, numFiles;
+	const char* name;
+
+	LOGI("Loading APK %s", apkPath);
+
+	APKArchive = zip_open(apkPath, 0, NULL);
+	if (APKArchive == NULL) {
+		LOGE("Error loading APK");
+		return;
+	}
+
+	//Just for debug, print APK contents
+	numFiles = zip_get_num_files(APKArchive);
+	for (i=0; i<numFiles; i++) {
+		name = zip_get_name(APKArchive, i, 0);
+		if (name == NULL) {
+			LOGE("Error reading zip file name at index %i : %s", i, zip_strerror(APKArchive));
+			return;
+		}
+		LOGI("File %i : %s\n", i, name);
+	}
+
+}
 
 int extract_file(const char *filename, const char *dest) {
 
